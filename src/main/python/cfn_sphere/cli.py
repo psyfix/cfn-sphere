@@ -90,7 +90,12 @@ def sync(config, parameter, suffix, debug, confirm, yes, tags):
     try:
         config = Config(config_file=config, cli_params=parameter, cli_tags=tags, stack_name_suffix=suffix)
         
-        REQUIRED_TAGS = ['confidentiality', 'criticality', 'stage']
+        if config.stack_config_base_dir:
+                    metadata_file = config._find_metadata_file(config.stack_config_base_dir)
+                    if not metadata_file:
+                        LOGGER.warning("metadata.yaml file is missing for stack deployment")
+
+        REQUIRED_TAGS = ['confidentiality', 'criticality', 'stage', 'id']
         for required_tag in REQUIRED_TAGS:
             if required_tag not in config.default_tags:
                 LOGGER.warning(f"Required tag '{required_tag}' is missing")

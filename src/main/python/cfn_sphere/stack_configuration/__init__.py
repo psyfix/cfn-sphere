@@ -138,18 +138,25 @@ class Config(object):
 
         service_id = metadata["id"]
         component_id = metadata.get('orgId', 'Scout24') + "/" + metadata["id"]
-        confidentiality = metadata.get('confidentiality', 'notinuse')
-        criticality = metadata.get('criticality', {}).get('value', 'notinuse')
         
         self.logger.info("Determined service-id to be %s" % service_id)
         self.logger.info("Determined component-id to be %s" % component_id)
 
-        return {
+        tags = {
             "service-id": service_id,
             "component-id": component_id,
-            "confidentiality": confidentiality,
-            "criticality": criticality,
         }
+        
+        # Only add confidentiality if it exists
+        if metadata.get('confidentiality'):
+            tags['confidentiality'] = metadata['confidentiality']
+        
+        # Only add criticality if it exists
+        criticality_value = metadata.get('criticality', {}).get('value')
+        if criticality_value:
+            tags['criticality'] = criticality_value
+
+        return tags
 
     def _find_metadata_file(self, basedir):
         f = None
