@@ -89,6 +89,43 @@ def sync(config, parameter, suffix, debug, confirm, yes, tags):
 
     try:
         config = Config(config_file=config, cli_params=parameter, cli_tags=tags, stack_name_suffix=suffix)
+        
+        REQUIRED_TAGS = ['confidentiality', 'criticality', 'stage']
+        for required_tag in REQUIRED_TAGS:
+            if required_tag not in config.default_tags:
+                LOGGER.warning(f"Required tag '{required_tag}' is missing")
+
+
+        ALLOWED_CONFIDENTIALITY = ['public', 'company-internal', 'company-internal-standard-pii', 'company-confidential', 'company-confidential-sensitive-pii', 'notinuse']
+        
+        if 'confidentiality' in config.default_tags:
+            confidentiality_value = config.default_tags['confidentiality']
+            if confidentiality_value not in ALLOWED_CONFIDENTIALITY:
+                raise CfnSphereException(
+                    f"Invalid confidentiality value: '{confidentiality_value}'. "
+                    f"Must be one of: {', '.join(ALLOWED_CONFIDENTIALITY)}"
+                )
+        
+        ALLOWED_STAGES = ['dev', 'pro', 'box']
+
+        if 'stage' in config.default_tags:
+            stage_value = config.default_tags['stage']
+            if stage_value not in ALLOWED_STAGES:
+                LOGGER.warning(
+                    f"Invalid stage value: '{stage_value}'. "
+                    f"Must be one of: {', '.join(ALLOWED_STAGES)}"
+                )
+
+        ALLOWED_CRITICALITY = ['platinum', 'gold', 'silver', 'bronze', 'notinuse']
+
+        if 'criticality' in config.default_tags:
+            criticality_value = config.default_tags['criticality']
+            if criticality_value not in ALLOWED_CRITICALITY:
+                raise CfnSphereException(
+                    f"Invalid criticality value: '{criticality_value}'. "
+                    f"Must be one of: {', '.join(ALLOWED_CRITICALITY)}"
+                )
+
         StackActionHandler(config).create_or_update_stacks()
     except CfnSphereException as e:
         LOGGER.error(e)

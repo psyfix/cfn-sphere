@@ -138,12 +138,17 @@ class Config(object):
 
         service_id = metadata["id"]
         component_id = metadata.get('orgId', 'Scout24') + "/" + metadata["id"]
+        confidentiality = metadata.get('confidentiality', 'notinuse')
+        criticality = metadata.get('criticality', {}).get('value', 'notinuse')
+        
         self.logger.info("Determined service-id to be %s" % service_id)
         self.logger.info("Determined component-id to be %s" % component_id)
 
         return {
             "service-id": service_id,
             "component-id": component_id,
+            "confidentiality": confidentiality,
+            "criticality": criticality,
         }
 
     def _find_metadata_file(self, basedir):
