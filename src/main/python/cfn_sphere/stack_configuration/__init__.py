@@ -143,11 +143,9 @@ class Config(object):
             self.logger.info("Determined service-id to be %s" % service_id)
             self.logger.info("Determined component-id to be %s" % component_id)
         
-        # Read confidentiality regardless of id
         if metadata.get('confidentiality'):
             tags['confidentiality'] = metadata['confidentiality']
         
-        # Read criticality regardless of id
         criticality_value = metadata.get('criticality', {}).get('value')
         if criticality_value:
             tags['criticality'] = criticality_value
