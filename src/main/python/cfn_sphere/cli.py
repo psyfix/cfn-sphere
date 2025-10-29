@@ -100,7 +100,6 @@ def sync(config, parameter, suffix, debug, confirm, yes, tags):
         REQUIRED_TAGS = ['component-id', 'confidentiality', 'criticality', 'stage']
         for required_tag in REQUIRED_TAGS:
             if required_tag not in config.default_tags:
-                # Better error message for metadata.yaml fields
                 if required_tag == 'component-id':
                     LOGGER.warning(
                         "Required tag 'component-id' is missing. "
