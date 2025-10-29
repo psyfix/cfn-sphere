@@ -132,26 +132,22 @@ class Config(object):
         loader = FileLoader()
         metadata = loader.get_yaml_or_json_file(file, working_dir=os.getcwd())
 
-        # If we don't even have ID, we can't go further
-        if not metadata.get('id'):
-            return {}
-
-        service_id = metadata["id"]
-        component_id = metadata.get('orgId', 'Scout24') + "/" + metadata["id"]
+        tags = {}
         
-        self.logger.info("Determined service-id to be %s" % service_id)
-        self.logger.info("Determined component-id to be %s" % component_id)
-
-        tags = {
-            "service-id": service_id,
-            "component-id": component_id,
-        }
+        # Only create service-id and component-id if id exists
+        if metadata.get('id'):
+            service_id = metadata["id"]
+            component_id = metadata.get('orgId', 'Scout24') + "/" + metadata["id"]
+            tags['service-id'] = service_id
+            tags['component-id'] = component_id
+            self.logger.info("Determined service-id to be %s" % service_id)
+            self.logger.info("Determined component-id to be %s" % component_id)
         
-        # Only add confidentiality if it exists
+        # Read confidentiality regardless of id
         if metadata.get('confidentiality'):
             tags['confidentiality'] = metadata['confidentiality']
         
-        # Only add criticality if it exists
+        # Read criticality regardless of id
         criticality_value = metadata.get('criticality', {}).get('value')
         if criticality_value:
             tags['criticality'] = criticality_value
