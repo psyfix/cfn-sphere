@@ -120,7 +120,7 @@ def sync(config, parameter, suffix, debug, confirm, yes, tags):
                 )
 
         # Stage tag value validation
-        ALLOWED_STAGES = ['dev', 'pro', 'box']
+        ALLOWED_STAGES = ['dev', 'pro', 'box', 'tuv']
         if 'stage' in config.default_tags:
             stage_value = config.default_tags['stage']
             if stage_value not in ALLOWED_STAGES:
