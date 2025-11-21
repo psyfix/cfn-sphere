@@ -89,35 +89,6 @@ def sync(config, parameter, suffix, debug, confirm, yes, tags):
 
     try:
         config = Config(config_file=config, cli_params=parameter, cli_tags=tags, stack_name_suffix=suffix)
-        
-        # Check metadata.yaml exists
-        if config.stack_config_base_dir:
-                    metadata_file = config._find_metadata_file(config.stack_config_base_dir)
-                    if not metadata_file:
-                        LOGGER.warning("metadata.yaml file is missing for stack deployment")
-       
-        # Check tags exist
-        REQUIRED_TAGS = ['component-id', 'confidentiality', 'criticality', 'stage']
-        for required_tag in REQUIRED_TAGS:
-            if required_tag not in config.default_tags:
-                if required_tag == 'component-id':
-                    LOGGER.warning(
-                        "Required tag 'component-id' is missing. "
-                        "Please ensure 'id' and 'orgId' fields exist in metadata.yaml. "
-                        "Example:\n  id: my-service-name\n  orgId: Scout24"
-                    )
-                else:
-                    LOGGER.warning(f"Required tag '{required_tag}' is missing")
-
-        # Confidentiality tag value validation
-        ALLOWED_CONFIDENTIALITY = ['public', 'company-internal', 'company-internal-standard-pii', 'company-confidential', 'company-confidential-sensitive-pii']
-        if 'confidentiality' in config.default_tags:
-            confidentiality_value = config.default_tags['confidentiality']
-            if confidentiality_value not in ALLOWED_CONFIDENTIALITY:
-                LOGGER.warning(
-                    f"Invalid confidentiality value: '{confidentiality_value}'. "
-                    f"Must be one of: {', '.join(ALLOWED_CONFIDENTIALITY)}"
-                )
 
         # Stage tag value validation
         ALLOWED_STAGES = ['dev', 'pro', 'box', 'tuv']
@@ -127,17 +98,6 @@ def sync(config, parameter, suffix, debug, confirm, yes, tags):
                 LOGGER.warning(
                     f"Invalid stage value: '{stage_value}'. "
                     f"Must be one of: {', '.join(ALLOWED_STAGES)}"
-                )
-       
-        # Criticality tag value validation
-        ALLOWED_CRITICALITY = ['platinum', 'gold', 'silver', 'bronze', 'notinuse']
-
-        if 'criticality' in config.default_tags:
-            criticality_value = config.default_tags['criticality']
-            if criticality_value not in ALLOWED_CRITICALITY:
-                LOGGER.warning(
-                    f"Invalid criticality value: '{criticality_value}'. "
-                    f"Must be one of: {', '.join(ALLOWED_CRITICALITY)}"
                 )
 
         StackActionHandler(config).create_or_update_stacks()
